@@ -1,6 +1,22 @@
 # Create the LakeEnsemblR (physical) set-up for a set of ISIMIP global lakes.
 # Based on set_up_lake_multiple() from ISIMIPglobalLER.
 
+#' Make hypsograph areas strictly decreasing with depth
+#'
+#' In about 37% of the ISIMIP hypsographs two neighbouring levels have the
+#' same area (a vertical wall). With bottom_everywhere = true, layers there
+#' get zero sediment area, and GOTM-WET then turns NaN from the first day.
+#' Each level that is not smaller than the one above it is set to that area
+#' minus `frac` (0.1%), so every layer gets some sediment area.
+#'
+#' @param area Areas ordered from the surface down
+strictly_decreasing <- function(area, frac = 0.001) {
+  for (i in seq_along(area)[-1]) {
+    if (area[i] > 0 && area[i] >= area[i - 1]) area[i] <- area[i - 1] * (1 - frac)
+  }
+  area
+}
+
 #' Set up LakeEnsemblR folders for several lakes
 #'
 #' For each lake: writes LakeEnsemblR.yaml with lake-specific values,
@@ -42,7 +58,11 @@ setup_ler_lakes <- function(lake_id, lake_meta, config_file, out_path,
 
   msg("Loading hypsographs")
   hyps <- load_hypso(x_id = lake_meta$x_id[lake_id], y_id = lake_meta$y_id[lake_id],
-                     ncfile = nc_file_hypso, lake_id = lake_id)
+                     ncfile = nc_file_hypso, lake_id = lake_id) |>
+    arrange(lake_id, Depth_meter) |>
+    group_by(lake_id) |>
+    mutate(Area_meterSquared = strictly_decreasing(Area_meterSquared)) |>
+    ungroup()
 
   # round forcing to sdigs significant digits
   met_cols <- setdiff(names(met), c("datetime", "lake_id"))
