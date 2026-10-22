@@ -1,42 +1,54 @@
 # Copied from ISIMIPglobalLER (github: isimipgloballer, commit a8d9608),
 # author Johannes Feldbauer, GPL (>= 3).
 # Changes: extract_var_id() and load_hypso() always use the multi-lake format
-# (so a single lake works too) and read cell by cell for up to `max_cells`
-# lakes instead of the whole global field; joins use explicit keys.
+# (so a single lake works too) and read the lakes' bounding box in blocks
+# instead of the whole global field; joins use explicit keys.
 
 #' Read a (lon, lat, z) variable at the given grid cells
 #'
-#' Reads cell by cell for up to `max_cells` cells, otherwise the whole field
-#' (faster for many lakes, but needs memory for the global field).
+#' Reads the bounding box of the cells in blocks along z (at most
+#' `max_values` values per block) and picks out the cells. ISIMIP files are
+#' chunked per global time step, so this decompresses each chunk only once,
+#' whereas reading cell by cell decompresses the whole file for every cell.
 #' @returns Matrix with one row per cell
-read_cells <- function(nc, var, x_id, y_id, max_cells = 100) {
-  if(length(x_id) <= max_cells) {
-    out <- vapply(seq_along(x_id), function(i) {
-      as.vector(ncvar_get(nc, var, start = c(x_id[i], y_id[i], 1), count = c(1, 1, -1)))
-    }, numeric(nc$var[[var]]$varsize[3]))
-    t(matrix(out, ncol = length(x_id)))
-  } else {
-    out <- ncvar_get(nc, var)[x_id, y_id, , drop = FALSE]
-    apply(out, 3, diag)
+read_cells <- function(nc, var, x_id, y_id, max_values = 5e7) {
+  nx <- diff(range(x_id)) + 1
+  ny <- diff(range(y_id)) + 1
+  nz <- nc$var[[var]]$varsize[3]
+  nc_cells <- length(x_id)
+  block <- max(1, min(nz, floor(max_values / (nx * ny))))
+  idx <- cbind(x_id - min(x_id) + 1, y_id - min(y_id) + 1)
+
+  out <- matrix(NA_real_, nc_cells, nz)
+  for (z0 in seq(1, nz, by = block)) {
+    n <- min(block, nz - z0 + 1)
+    b <- ncvar_get(nc, var, start = c(min(x_id), min(y_id), z0),
+                   count = c(nx, ny, n), collapse_degen = FALSE)
+    out[, z0:(z0 + n - 1)] <- b[cbind(idx[rep(seq_len(nc_cells), n), , drop = FALSE],
+                                      rep(seq_len(n), each = nc_cells))]
   }
+  out
 }
 
 #' List the ISIMIP meteo forcing files for a scenario and GCM
 #'
-#' @param base_dir Directory with subfolders <scen>/<gcm> holding the ISIMIP files
+#' @param base_dir Directory with subfolders <scen>/<gcm> holding the ISIMIP
+#'   files, or (with `scen` and `gcm` NULL) the folder with the files itself
 #' @returns data.frame with columns file, var, per, path
-create_cdata_paths <- function(base_dir, scen, gcm) {
-  cdata_scen <- file.path(base_dir, scen, gcm)
-  files <- data.frame(file = list.files(cdata_scen))
+#' @details Works for global files (`..._tas_global_daily_...`) and regional
+#'   extracts (`..._tas_dnk_30arcmin_daily_...`).
+create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL) {
+  cdata_scen <- do.call(file.path, as.list(c(base_dir, scen, gcm)))
+  files <- data.frame(file = list.files(cdata_scen, pattern = "_daily_.*[.]nc$"))
   files |>
-    mutate(var = case_when(grepl("hurs_global", file) ~ "rel_h",
-                           grepl("_tas_global", file) ~ "at",
-                           grepl("_sfcwind_global", file) ~ "wind",
-                           grepl("_rlds_global", file) ~ "lwr",
-                           grepl("_rsds_global", file) ~ "swr",
-                           grepl("_prsn_global", file) ~ "snow",
-                           grepl("_ps_global", file) ~ "p",
-                           grepl("_pr_global", file) ~ "prec"),
+    mutate(var = case_when(grepl("_hurs_", file) ~ "rel_h",
+                           grepl("_tas_", file) ~ "at",
+                           grepl("_sfcwind_", file) ~ "wind",
+                           grepl("_rlds_", file) ~ "lwr",
+                           grepl("_rsds_", file) ~ "swr",
+                           grepl("_prsn_", file) ~ "snow",
+                           grepl("_ps_", file) ~ "p",
+                           grepl("_pr_", file) ~ "prec"),
            per = gsub("\\.nc", "", gsub(".*_daily_", "", file))) |>
     filter(!is.na(var)) |>
     mutate(path = gsub("/+", "/", file.path(cdata_scen, file)))
