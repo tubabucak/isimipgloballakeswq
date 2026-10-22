@@ -12,6 +12,10 @@ ISIMIP output come from LakeEnsemblR.WQ.
 - `R/`: project functions, sourced by `scripts/00_settings.R`
   - `setup_ler_lakes.R`: writes the LakeEnsemblR set-up for a set of lakes
   - `wq_helpers.R`: copy WQ templates, run per lake with error logging
+  - `compare_models.R`: read the ISIMIP files at the lakes
+    (`read_isimip_lakes()`), statistics per model against the ensemble mean
+    (`summarise_model_comparison()`) and time series plots
+    (`plot_model_comparison()`, needs ggplot2)
   - `isimip_setup/`: functions copied from ISIMIPglobalLER (commit
     `a8d9608`, author Johannes Feldbauer, GPL >= 3); each file says what
     was changed
@@ -38,6 +42,6 @@ All paths, scenario, GCM, lakes and models are set in `scripts/00_settings.R`.
 - The simulation stops on 31 December of the last forcing year.
 - ISIMIP output years are passed explicitly, because `add_spin_up()` moves
   the yaml start date back by the spin-up years.
-- With more than one lake, each forcing file is read as a whole global
-  field (`extract_var_id()`), which needs several GB of memory for a
-  10-year ISIMIP file.
+- The forcing is read over the lakes' bounding box in blocks of time steps
+  (`read_cells()`), because ISIMIP files are chunked per global time step
+  and reading cell by cell decompresses the whole file for every lake.
