@@ -1,0 +1,102 @@
+models:
+   - GOTM-WET
+   - GOTM-Selmaprotbas
+   - GLM-AED
+   - Simstrat-AED2
+config_files:
+   GOTM-WET: GOTM-WET/fabm.yaml
+   GOTM-Selmaprotbas: GOTM-Selmaprotbas/fabm.yaml
+   GLM-AED: GLM-AED/aed2.nml
+   Simstrat-AED2: Simstrat-AED2/aed2.nml
+run_settings:
+   bio-shading: true
+   ode_method: Euler # Options: Euler, RK2, RK4, Pat1, PatRK2, PatRK4, ModPat1, ModPatRK2, ModPatRK4, ExtModPat1, ExtModPatRK2; default = Euler 
+   split_factor: 1
+   bottom_everywhere: true
+   repair_state: true
+input:
+   inflows:                     # no nutrient inputs (inflows are off in LakeEnsemblR.yaml)
+oxygen:
+   use: true
+   par_file: 
+carbon:
+   use: true
+   par_file: 
+sediment:
+   use: true
+   par_file: 
+detritus:
+   use: true
+   par_file: 
+nitrogen:
+   use: true
+   par_file: 
+phosphorus:
+   use: true
+   par_file: 
+silicon:
+   use: true
+   par_file: 
+phytoplankton:
+   use: true
+   groups: 
+      diatoms:
+         par_file: 
+      cyanobacteria:
+         par_file: 
+   #   greens:
+   #      par_file: 
+ #        pclake_group: bluegreen
+   #   some_random_group:
+   #      par_file: WQ_input_files/some_random_group.csv
+zooplankton:
+   use: true
+   groups:
+      daphnia:
+         par_file: 
+         prey:
+         - phytoplankton/diatoms
+         - phytoplankton/cyanobacteria
+     #    - phytoplankton/greens
+     # cyplops:
+     #    par_file: 
+     #    prey:
+      #   - phytoplankton/diatoms
+      #   - phytoplankton/cyanobacteria
+      #   - phytoplankton/greens
+      #    par_file: WQ_input_files/zooplankton.csv
+      #    prey:
+      #    - phytoplankton/diatoms
+fish: 
+   use: false
+   groups:
+      benthivores:
+         par_file: 
+         prey:
+         - zooplankton/daphnia
+         # - zooplankton/mesozoo
+      piscivores:
+         par_file: 
+         prey:
+         - zooplankton/daphnia
+         - fish/benthivores
+macrophytes:
+   use: false
+   groups:
+      macrophytes:
+         par_file: 
+zoobenthos:
+   use: false
+   groups:
+      zoobenthos:
+         par_file: 
+pathogens:
+   use: false
+   groups:
+      pathogens:
+         par_file: 
+#birds:
+#   use: false
+#   par_file:
+#output:
+#   something: true

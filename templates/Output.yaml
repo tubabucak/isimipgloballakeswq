@@ -1,0 +1,80 @@
+folder: 
+files:
+  bathy_file: "hypsograph.csv"
+  metrics_dict: 
+  metric_yaml_file: "Output.yaml"
+  LER_config_file: "LakeEnsemblR.yaml"
+model_folders:
+  GLM: "GLM-AED/output"
+  WET: "GOTM-WET/output"
+  SELMAPROTBAS: "GOTM-Selmaprotbas/output"
+  SIMSTRAT: "Simstrat-AED2/output"
+Level1:
+   LER:
+      Temp_degreeCelcius:
+    #  Surface_Mixed_Layer_Depth_meter:
+    #  Bottom_Surface_Difference_degC:
+      Duration_of_Stratification:
+         hemisphere : "N"
+    #  Metalimnion_Thickness_meter:
+#   - Richardson_Number
+#   - Schmidt_Stability
+    #  Salt_gramsPerKilograms:
+      Ice_Thickness_meter:
+   #  Lake_Level_meters:  
+   Oxygen:
+      DO_gramsPerCubicMeter:
+      #DO_Frequency_Spectra:
+   #   DO_Temporal_Variability:
+   #      depth: 1.0
+      Number_Of_Anoxic_Day:
+         threshold: 1.0
+         duration: "full"
+#    Carbon:
+#    #   DIC_gramsPerCubicMeter:
+#       DOC_gramsPerCubicMeter:
+#       DOM_gramsPerCubicMeter:
+#       POC_gramsPerCubicMeter:
+#       POM_gramsPerCubicMeter:
+#      # pH:
+#     #   Total_Suspended_Solids:
+   Nitrogen:
+#       DON_gramsPerCubicMeter:
+      NH4_gramsPerCubicMeter:
+      NO3_gramsPerCubicMeter:
+#       PON_gramsPerCubicMeter:
+      TN_gramsPerCubicMeter:
+   Phosphorus:
+#       DOP_gramsPerCubicMeter:
+      PO4_gramsPerCubicMeter:
+#    POP_gramsPerCubicMeter:
+      TP_gramsPerCubicMeter:
+#    Silica:
+#       Silica_gramsPerCubicMeter:
+   Phytoplankton:
+      Total_Chla_miligramsPerCubicMeter:
+      Phyto_Chla_miligramsPerCubicMeter:
+#       Phyto_C_miligramsPerCubicMeter:
+   Zooplankton: 
+       Zoop_C_gramsPerCubicMeter:
+# #   #  Inflows:
+# #   #     Inflow_TN_gramsPerDay:
+# #   #     Inflow_TP_gramsPerDay:
+Level2:
+#    LER:
+#       Evaporation_metersPerSecond:
+#    #Oxygen:
+#      #  SOD_mgLPerCubicMeter:
+   Nitrogen:
+      Nitrif_gramsPerCubicMeterPerDay:
+#    #    Denitrif_gramsPerCubicMeterPerDay:
+# #    Phytoplankton:
+# #       Phyto_Respiration_C_miligramsPerCubicMeterPerDay:
+# #       Phyto_Respiration_N_miligramsPerCubicMeterPerDay:
+# #       Phyto_Respiration_P_miligramsPerCubicMeterPerDay:
+# Level3:
+#    Phytoplankton:
+#       Phyto_GPP_miligramsPerCubicMeterPerDay:
+#       Phyto_NPP_miligramsPerCubicMeterPerDay:
+#    Zooplankton:
+#    #   Zoop_grazing_miligramsCarbonPerCubicMeterPerDay:

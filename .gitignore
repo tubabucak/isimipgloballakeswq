@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.positai
+
+# Simulation folders and model output
+runs/
+isimip_global/
+*.nc
+example_run/
