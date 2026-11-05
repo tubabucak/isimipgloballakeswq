@@ -21,7 +21,8 @@ strictly_decreasing <- function(area, frac = 0.001) {
 #'
 #' For each lake: writes LakeEnsemblR.yaml with lake-specific values,
 #' meteo.csv, hypsograph.csv and init_temp_prof.csv, optionally adds a
-#' spin-up period, and runs LakeEnsemblR::export_config().
+#' spin-up period, and runs LakeEnsemblR::export_config(). The forcing is
+#' read one period (file) at a time and appended to meteo.csv.
 #'
 #' @param lake_id Ids of the lakes (rows of `lake_meta`)
 #' @param lake_meta Lake metadata (`lake_meta_dat`)
@@ -48,13 +49,31 @@ setup_ler_lakes <- function(lake_id, lake_meta, config_file, out_path,
                   nc_files_met = nc_files_met)
   }
 
+  # One forcing period (file) at a time, appended to each lake's meteo.csv,
+  # so memory use is set by one period and not by the whole simulation
   msg("Loading meteo forcing")
-  met <- lapply(unique(nc_files_met$per), function(p) {
+  unlink(file.path(out_paths, "meteo.csv"))
+  periods <- sort(unique(nc_files_met$per))
+  for (p in periods) {
     msg("  period ", p)
     files <- nc_files_met |> filter(per == p) |> select(path, var) |>
       pivot_wider(values_from = path, names_from = var)
-    load_met_forc_multi(lake_id = lake_id, ncfiles = files, lake_meta = lake_meta)
-  }) |> bind_rows() |> arrange(lake_id, datetime)
+    met <- load_met_forc_multi(lake_id = lake_id, ncfiles = files, lake_meta = lake_meta) |>
+      arrange(lake_id, datetime)
+
+    # round forcing to sdigs significant digits
+    met_cols <- setdiff(names(met), c("datetime", "lake_id"))
+    met[met_cols] <- signif(met[met_cols], sdigs)
+    met$datetime <- format(met$datetime, format = "%Y-%m-%d 00:00:00")
+
+    for (i in seq_along(lake_id)) {
+      met_i <- met[met$lake_id == paste0("lake_", lake_id[i]), ] |> select(-lake_id)
+      write.table(met_i, file.path(out_paths[i], "meteo.csv"), sep = ",", quote = FALSE,
+                  row.names = FALSE, append = p != periods[1], col.names = p == periods[1])
+    }
+    rm(met)
+    gc()
+  }
 
   msg("Loading hypsographs")
   hyps <- load_hypso(x_id = lake_meta$x_id[lake_id], y_id = lake_meta$y_id[lake_id],
@@ -64,19 +83,11 @@ setup_ler_lakes <- function(lake_id, lake_meta, config_file, out_path,
     mutate(Area_meterSquared = strictly_decreasing(Area_meterSquared)) |>
     ungroup()
 
-  # round forcing to sdigs significant digits
-  met_cols <- setdiff(names(met), c("datetime", "lake_id"))
-  met[met_cols] <- signif(met[met_cols], sdigs)
-  met$datetime <- format(met$datetime, format = "%Y-%m-%d 00:00:00")
-
   wd <- getwd()
   on.exit(setwd(wd))
 
   for (i in seq_along(lake_id)) {
     msg("[", i, "/", length(lake_id), "] ", out_paths[i])
-
-    met_i <- met[met$lake_id == paste0("lake_", lake_id[i]), ] |> select(-lake_id)
-    write.csv(met_i, file.path(out_paths[i], "meteo.csv"), quote = FALSE, row.names = FALSE)
 
     hyps_i <- hyps[hyps$lake_id == lake_id[i], c("Depth_meter", "Area_meterSquared")]
     write.csv(signif(hyps_i, sdigs), file.path(out_paths[i], "hypsograph.csv"),
@@ -97,10 +108,12 @@ setup_ler_lakes <- function(lake_id, lake_meta, config_file, out_path,
       suppressMessages(export_config(config_file = "LakeEnsemblR.yaml", model = models))
     }
 
-    # disable evaporation in GLM to avoid water loss (no in-/outflows)
+    # constant water level in GLM: no evaporation, and no rain (it would only
+    # spill over the crest and flush the lake, unlike in GOTM/Simstrat)
     if ("GLM" %in% models) {
       nml <- read_nml(file.path("GLM", "glm3.nml"))
       nml[["debugging"]][["disable_evap"]] <- TRUE
+      nml[["meteorology"]][["rain_factor"]] <- 0
       write_nml(nml, file.path("GLM", "glm3.nml"))
     }
     setwd(wd)

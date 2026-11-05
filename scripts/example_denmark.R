@@ -26,7 +26,7 @@ message(length(dnk_ids), " Danish lakes")
 
 # A few of them: three with a repeated area level in the hypsograph
 # (25476, 26164, 26504) and three without (26853, 26165, 25478)
-ex_ids <- c(25476, 26164, 26504, 26853, 26165, 25478)
+ex_ids <- c(25478)#, 26164, 26504, 26853, 26165, 25478)
 stopifnot(all(ex_ids %in% dnk_ids))
 lake_meta_dat[ex_ids, c("id", "lat", "lon", "depth", "area", "elevation")]
 
@@ -42,6 +42,8 @@ ex_dirs <- setup_ler_lakes(lake_id       = ex_ids,
 
 # ---- 2. WQ set-up ----------------------------------------------------------
 copy_wq_templates(ex_dirs, template_dir)
+# Generic inflow + outflow with constant N, P and Si (see R/generic_inflow.R)
+for (d in ex_dirs) add_generic_inflow(d, residence_time_d = 365)
 setup_log <- for_each_lake(ex_dirs, setup_wq_lake)
 setup_log
 
@@ -57,7 +59,7 @@ ex_lakes <- data.frame(id     = lake_meta_dat$id[ex_ids],
 ex_lakes <- ex_lakes[run_log$ok, ]
 
 ex_files <- create_isimip_global(ex_lakes,
-                                 model      = isimip_models,
+                                 model      = isimip_models2,
                                  start_year = 1991,
                                  end_year   = 2000,
                                  out_dir    = file.path(ex_dir, "isimip_global"),
@@ -71,3 +73,7 @@ basename(ex_files)
 cmp <- read_isimip_lakes(file.path(ex_dir, "isimip_global"), ex_lakes)
 summarise_model_comparison(cmp)
 plot_model_comparison(cmp, lake = ex_lakes$id[1])
+
+cmp <- read_isimip_lakes(file.path(ex_dir, "isimip_global"), ex_lakes)
+summarise_model_comparison(cmp, models = c("glm-aed", "gotm-selmaprotbas", "gotm-wet"))
+plot_model_comparison(cmp, lake = ex_lakes$id[1], models = c("glm-aed", "gotm-wet", 'gotm-selmaprotbas'))

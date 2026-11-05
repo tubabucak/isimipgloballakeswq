@@ -1,0 +1,7 @@
+"domain","process","subprocess","model_coupled","parameter","value","unit","path","note"
+"water","initial_conditions","initial_ammonium","GOTM-WET","sNH4W","0.0443","g/m3","abiotic_water/initialization/sNH4W","ammonium"
+"water","initial_conditions","initial_ammonium","GOTM-Selmaprotbas","aa","2.6","mmol N m-3","selmaprotbas/initialization/aa","initial dissolved ammonium in the water column"
+"water","initial_conditions","initial_nitrate","GOTM-Selmaprotbas","nn","35.7","mmol N m-3","selmaprotbas/initialization/nn","initial dissolved nitrate in the water column"
+"water","initial_conditions","initial_nitrate","GLM-AED","nit_initial","35.7","mmol N m-3","aed2_nitrogen/nit_initial","initial NO3 concentration"
+"water","initial_conditions","initial_nitrate","Simstrat-AED2","nit_initial","35.7","mmol N m-3","aed2_nitrogen/nit_initial","initial NO3 concentration"
+"sediment","decomposition","mineralisation_dom","GOTM-WET","kNMinS","1e-05","1/d","humus/parameters/kNMinS","humus N mineralisation at 20*C; set equal to humus kDMinS (default 5e-5 releases N 5x faster than humus DW)"

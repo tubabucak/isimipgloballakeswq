@@ -10,3 +10,15 @@ runs/
 isimip_global/
 *.nc
 example_run/
+example_dnk/
+example_run_wet/
+example_dnk_fix/
+
+# HPC job logs and derived lake table
+logs/
+data/inflow_table.csv
+
+# Large HydroLAKES tables (copy separately) and stray plots
+data/hydrolakes_attributes_all.csv
+data/hydrolakes_discharge.csv
+Rplots.pdf

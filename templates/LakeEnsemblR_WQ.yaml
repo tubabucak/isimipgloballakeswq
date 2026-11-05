@@ -18,10 +18,10 @@ input:
    inflows:                     # no nutrient inputs (inflows are off in LakeEnsemblR.yaml)
 oxygen:
    use: true
-   par_file: 
+   par_file: initial_pars/par_oxygen.csv
 carbon:
    use: true
-   par_file: 
+   par_file: initial_pars/par_carbon.csv
 sediment:
    use: true
    par_file: 
@@ -30,22 +30,22 @@ detritus:
    par_file: 
 nitrogen:
    use: true
-   par_file: 
+   par_file: initial_pars/par_nitrogen.csv
 phosphorus:
    use: true
-   par_file: 
+   par_file: initial_pars/par_phosphorus.csv
 silicon:
    use: true
-   par_file: 
+   par_file: initial_pars/par_silicon.csv
 phytoplankton:
    use: true
    groups: 
       diatoms:
-         par_file: 
+         par_file: initial_pars/par_diatoms.csv
       cyanobacteria:
-         par_file: 
-   #   greens:
-   #      par_file: 
+         par_file: initial_pars/par_cyanobacteria.csv
+      greens:
+         par_file: initial_pars/par_greens.csv
  #        pclake_group: bluegreen
    #   some_random_group:
    #      par_file: WQ_input_files/some_random_group.csv
@@ -53,11 +53,11 @@ zooplankton:
    use: true
    groups:
       daphnia:
-         par_file: 
+         par_file: initial_pars/par_daphnia.csv
          prey:
          - phytoplankton/diatoms
          - phytoplankton/cyanobacteria
-     #    - phytoplankton/greens
+         - phytoplankton/greens
      # cyplops:
      #    par_file: 
      #    prey:

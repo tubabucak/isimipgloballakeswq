@@ -1,0 +1,2 @@
+"domain","process","subprocess","model_coupled","parameter","value","unit","path","note"
+"water","initial_conditions","initial_oxygen","GOTM-WET","sO2W","7.2","g/m3","abiotic_water/initialization/sO2W","oxygen"

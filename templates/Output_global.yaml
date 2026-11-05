@@ -1,0 +1,27 @@
+folder:
+files:
+  bathy_file: "hypsograph.csv"
+  metrics_dict:
+  metric_yaml_file: "Output.yaml"
+  LER_config_file: "LakeEnsemblR.yaml"
+model_folders:
+  GLM: "GLM-AED/output"
+  WET: "GOTM-WET/output"
+  SELMAPROTBAS: "GOTM-Selmaprotbas/output"
+  SIMSTRAT: "Simstrat-AED2/output"
+# Metrics for the global runs only (copied into the lake folders as
+# Output.yaml by run_global_lake()). Temp_degreeCelcius is also needed for
+# the epilimnion/hypolimnion split in create_isimip_global().
+Level1:
+   LER:
+      Temp_degreeCelcius:
+   Oxygen:
+      DO_gramsPerCubicMeter:
+   Nitrogen:
+      TN_gramsPerCubicMeter:
+   Phosphorus:
+      TP_gramsPerCubicMeter:
+   Phytoplankton:
+      Total_Chla_miligramsPerCubicMeter:
+   Zooplankton:
+      Zoop_C_gramsPerCubicMeter:

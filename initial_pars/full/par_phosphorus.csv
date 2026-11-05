@@ -1,0 +1,59 @@
+domain,process,subprocess,model_coupled,parameter,value,unit,path,note
+sediment,absorption,absorption,GOTM-WET,cKPAdsOxS,1.5,m3/gP,abiotic_sediment/parameters/cKPAdsOxS,P adsorption affinity at oxidized conditions
+water,absorption,absorption,GOTM-WET,cKPAdsOxW,0.6,m3/gP,abiotic_water/parameters/cKPAdsOxW,P adsorption affinity at oxidized conditions
+sediment,sediment_characteristics,pore_water,GOTM-WET,coPO4Max,1.4,mgP/l,abiotic_sediment/parameters/coPO4Max,max. soluble reactive P conc. in pore water
+sediment,sediment_ground_exchange,groundwater_exchange,GOTM-WET,cPO4Ground,0.1,mgP/l,burial/parameters/cPO4Ground,PO4 concentration in groundwater
+sediment,absorption,absorption,GOTM-WET,cRelPAdsAlS,0.134,gP/gAl,abiotic_sediment/parameters/cRelPAdsAlS,max. P adsorption per g Al
+water,absorption,absorption,GOTM-WET,cRelPAdsAlW,0.134,gP/gAl,abiotic_water/parameters/cRelPAdsAlW,maximum P adsorption per g Al
+sediment,absorption,absorption,GOTM-WET,cRelPAdsDWS,3.00E-05,gP/gDW,abiotic_sediment/parameters/cRelPAdsDWS,max. P adsorption per g DW
+water,absorption,absorption,GOTM-WET,cRelPAdsDWW,3.00E-05,gP/gDW,abiotic_water/parameters/cRelPAdsDWW,maximum P adsorption per g DW
+sediment,absorption,absorption,GOTM-WET,cRelPAdsFeS,0.06,gP/gFe,abiotic_sediment/parameters/cRelPAdsFeS,max. P adsorption per g Fe
+water,absorption,absorption,GOTM-WET,cRelPAdsFeW,0.0675,gP/gFe,abiotic_water/parameters/cRelPAdsFeW,maximum P adsorption per g Fe
+sediment,absorption,inorganic_matter_composition,GOTM-WET,fAlDIMS,0.01,gAl/gD,abiotic_sediment/parameters/fAlDIMS,Al content of inorganic matter
+water,absorption,inorganic_matter_composition,GOTM-WET,fAlDIMW,0.01,gAl/gDW,abiotic_water/parameters/fAlDIMW,Al content of inorganic matter
+sediment,absorption,inorganic_matter_composition,GOTM-WET,fFeDIM,0.04,gFe/gD,abiotic_sediment/parameters/fFeDIM,Fe content of inorganic matter
+water,absorption,inorganic_matter_composition,GOTM-WET,fFeDIMW,0.01,gFe/gDW,abiotic_water/parameters/fFeDIMW,Fe content of inorganic matter
+sediment,absorption,absorption,GOTM-WET,fRedMaxS,0.96,-,abiotic_sediment/parameters/fRedMaxS,max. reduction factor of P adsorption affinity
+water,absorption,absorption,GOTM-WET,fRedMaxW,0.9,-,abiotic_water/parameters/fRedMaxW,maximum reduction factor of P adsorption affinity
+sediment,absorption,absorption,GOTM-WET,kPChemPO4,0.03,1/d,abiotic_sediment/parameters/kPChemPO4,chemical PO4 loss rate
+sediment,water_sediment_exchange,diffusion,GOTM-WET,kPDifDOM1,0.00016,m2/d,sediment_exchange/parameters/kPDifDOM1,DOM diffusion constant P at 20*C
+sediment,water_sediment_exchange,diffusion,GOTM-WET,kPDifPO4,7.20E-05,m2/d,sediment_exchange/parameters/kPDifPO4,PO4 diffusion constant at 20*C
+sediment,decomposition,mineralisation_dom,GOTM-WET,kPMinS,0.003,1/d,DOM/parameters/kPMinS,mineralization constant of DOM-P at 20*C
+water,decomposition,mineralisation_dom,GOTM-WET,kPMinW,0.01,1/d,DOM/parameters/kPMinW,mineralization constant of DOM-P at 20*C
+sediment,decomposition,mineralisation_pom,GOTM-WET,kPMinS,0.00005,1/d,humus/parameters/kPMinS,decomposition constant of POM-P at 20*C
+water,decomposition,mineralisation_pom,GOTM-WET,kPMinW,0.01,1/d,POM/parameters/kPMinW,decomposition constant of POM-P at 20*C
+sediment,absorption,absorption,GOTM-WET,kPSorpS,0.003,1/d,abiotic_sediment/parameters/kPSorpS,P sorption rate constant
+water,decomposition,mineralisation_humus,GOTM-WET,kPMinW,0.001,1/d,humus/parameters/kPMinW,decomposition constant of POM-P at 20*C
+water,absorption,absorption,GOTM-WET,kPSorpW,0.05,1/d,abiotic_water/parameters/kPSorpW,P adsorption rate constant
+sediment,initial_conditions,initial_pim,GOTM-WET,sPAIMS,2,g/m2,abiotic_sediment/initialization/sPAIMS,absorbed phosphate
+water,initial_conditions,initial_pim,GOTM-WET,sPAIMW,0,g/m3,abiotic_water/initialization/sPAIMW,IM-adsorbed P
+sediment,initial_conditions,initial_dom,GOTM-WET,sPS,0.01,g/m2,DOM/initialization/sPS,dissolved organic P
+water,initial_conditions,initial_dom,GOTM-WET,sPW,0.001,g/m3,DOM/initialization/sPW,dissolved organic P
+sediment,initial_conditions,initial_humus,GOTM-WET,sPS,0.1,g/m2,POM/initialization/sPS,humus P
+sediment,initial_conditions,initial_phosphate,GOTM-WET,sPO4S,0.02,g/m2,abiotic_sediment/initialization/sPO4S,phosphate
+water,initial_conditions,initial_phosphate,GOTM-WET,sPO4W,0.01,g/m3,abiotic_water/initialization/sPO4W,phosphate
+sediment,initial_conditions,initial_pom,GOTM-WET,sPS,16,g/m2,humus/initialization/sPS,particulate organic P
+water,initial_conditions,initial_pom,GOTM-WET,sPW,0.001,g/m3,POM/initialization/sPW,particulate organic P
+water,water_atmosphere_exchange,phosphate,GOTM-WET,tPDepoPO4,0,g/m2/d,abiotic_water/parameters/tPDepoPO4,phosphate deposition
+sediment,burial,burial,GOTM-Selmaprotbas,pburialrate,0.007,d-1,selmaprotbas/parameters/pburialrate,phosphate burial rate
+sediment,burial,burial,GOTM-Selmaprotbas,ipo4th,100,mmol P m-2,selmaprotbas/parameters/ipo4th,maximum phosphorus density available for burial
+sediment,initial_conditions,initial_phosphorus,GOTM-Selmaprotbas,fl_p,2,mmol P m-2,selmaprotbas/initialization/fl_p,initial phosphorus fluff (= active sediment)
+sediment,initial_conditions,initial_phosphorus,GOTM-Selmaprotbas,pb,0.03,mmol P m-2,selmaprotbas/initialization/pb,initial phosphorus bound to iron in the sediment
+sediment,water_sediment_exchange,adsorption,GOTM-Selmaprotbas,pliberationrate,0.1,d-1,selmaprotbas/parameters/pliberationrate,phosphate liberation rate;  anoxic sediments
+sediment,water_sediment_exchange,adsorption,GOTM-Selmaprotbas,po4ret,0.18,-,selmaprotbas/parameters/po4ret,phosphate retention rate;  oxic sediments
+sediment,water_sediment_exchange,resuspension,GOTM-Selmaprotbas,eroratepo4,6,d-1,selmaprotbas/parameters/eroratepo4,P-Fe erosion rate
+water,initial_conditions,initial_phosphate,GOTM-Selmaprotbas,po,0.323,mmol P m-3,selmaprotbas/initialization/po,initial dissolved phosphate in the water column
+water,initial_conditions,initial_phosphorus,GOTM-Selmaprotbas,pw,0.001,mmol P m-3,selmaprotbas/initialization/pw,initial phosphorus bound to iron in the water column
+water,initial_conditions,initial_pom,GOTM-Selmaprotbas,dd_p,0,mmol P m-3,selmaprotbas/initialization/dd_p,initial detritus-P in the water column
+water,vertical_movement,sedimentation,GOTM-Selmaprotbas,wpo4,-1,m d-1,selmaprotbas/parameters/wpo4,vertical velocity of suspended P-Fe (positive: upwards/floating;  negative: downwards/sinking)
+water,water_sediment_exchange,sedimentation,GOTM-Selmaprotbas,sedratepo4,0.5,m d-1,selmaprotbas/parameters/sedratepo4,P-Fe sedimentation rate
+water,water_column_processes,adsorption,GLM-AED,Qmax,1,-,aed2_phosphorus/Qmax,Sorption constant
+water,water_column_processes,phosphorus,GLM-AED,frp_initial ,0.323,mmol P m-3,aed2_phosphorus/frp_initial,-
+water,water_sediment_exchange,phosphorus,GLM-AED,Fsed_frp,0.45,mmol P m-3 d-1,aed2_phosphorus/Fsed_frp,Sediment-water flux for inorganic phosphorus
+water,water_sediment_exchange,phosphorus,GLM-AED,theta_sed_frp,1.07,-,aed2_phosphorus/theta_sed_frp,half-saturation concentration of  inorganic phosphorus sediment flux
+water,water_sediment_exchange,phosphorus,GLM-AED,Ksed_frp,62.5,mmol P m-3,aed2_phosphorus/Ksed_frp,Arrhenius temperature multiplier for sediment  inorganic phosphorus flux
+water,water_column_processes,adsorption,Simstrat-AED2,Qmax,1,-,aed2_phosphorus/Qmax,Sorption constant
+water,water_column_processes,phosphorus,Simstrat-AED2,frp_initial ,0.323,mmol P m-3,aed2_phosphorus/frp_initial,-
+water,water_sediment_exchange,phosphorus,Simstrat-AED2,Fsed_frp,0.45,mmol P m-3 d-1,aed2_phosphorus/Fsed_frp,Sediment-water flux for inorganic phosphorus
+water,water_sediment_exchange,phosphorus,Simstrat-AED2,theta_sed_frp,1.07,-,aed2_phosphorus/theta_sed_frp,half-saturation concentration of  inorganic phosphorus sediment flux
+water,water_sediment_exchange,phosphorus,Simstrat-AED2,Ksed_frp,62.5,mmol P m-3,aed2_phosphorus/Ksed_frp,Arrhenius temperature multiplier for sediment  inorganic phosphorus flux

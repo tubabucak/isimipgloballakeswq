@@ -1,0 +1,23 @@
+domain,process,subprocess,model_coupled,parameter,value,unit,path,note
+water,stoichiometry,equation_options_n_fixation,GOTM-WET,lNfix,TRUE,(boolean),{group_name}/parameters/lNfix,toggle nitrogen fixation
+water,growth,growth_rate,GOTM-WET,cMuMax,0.6,1/d,{group_name}/parameters/cMuMax,maximum growth rate at 20*C
+water,growth,light_limitation,GOTM-WET,cLOptRef,13.6,W/m2,{group_name}/parameters/cLOptRef,qLightMethod=2; optimum PAR at 20*C; Steele function
+water,vertical_movement,settling,GOTM-WET,cVSet,0.06,qTrans = 1; settling rat,{group_name}/parameters/cVSet,
+water,growth,temperature_limitation,GOTM-WET,cSigTm,12,*C,{group_name}/parameters/cSigTm,growth rate temperature constant; sigma in Gaussian curve
+water,vertical_movement,equation_options_vertical_velocity,GOTM-Selmaprotbas,buoyancy_regulation,TRUE,(boolean),{group_name}/parameters/buoyancy_regulation,whether cells can regulate vertical movement
+water,growth,equation_options_n_limitation,GOTM-Selmaprotbas,nitrogen_fixation,TRUE,(boolean),{group_name}/parameters/nitrogen_fixation,whether nitrogen fixation is used to acquire nitrogen
+water,growth,growth_rate,GOTM-Selmaprotbas,r0,0.6,d-1,{group_name}/parameters/r0,maximum growth rate at 20 degrees C
+water,growth,temperature_minimum,GOTM-Selmaprotbas,temp_min,12,degC,{group_name}/parameters/temp_min,"temperature below optimum where growth is 10% of maximum (degrees C), default = 0.0"
+water,growth,temperature_optimum,GOTM-Selmaprotbas,temp_opt,25,degC,{group_name}/parameters/temp_opt,"optimum temperature of growth rate (degrees C), default = 20.0"
+water,growth,light_limitation,GLM-AED,I_K,60,micro E m-2 s-1,phyto_data/pd%I_K,saturation_concentration
+water,growth,growth_rate,GLM-AED,R_growth,0.8,d-1,phyto_data/pd%R_growth,Phyto max growth rate @20C
+water,growth,n_fixation,GLM-AED,R_nfix,0.13,mmol N mmol C-1 d-1,phyto_data/pd%R_nfix,fixation_rate
+water,growth,equation_options_n_limitation,GLM-AED,simNFixation,1,(integer),phyto_data/pd%simNFixation,1: ; 2:
+water,growth,temperature_limitation,GLM-AED,T_max,35,degC,phyto_data/pd%T_max,maximum_temperature
+water,vertical_movement,vertical_velocity,GLM-AED,w_p,0,m d-1,phyto_data/pd%w_p,Sedimentation rate (negative is downwards)
+water,growth,light_limitation,Simstrat-AED2,I_K,60,micro E m-2 s-1,phyto_data/pd%I_K,saturation_concentration
+water,growth,growth_rate,Simstrat-AED2,R_growth,0.8,d-1,phyto_data/pd%R_growth,Phyto max growth rate @20C
+water,growth,n_fixation,Simstrat-AED2,R_nfix,0.13,mmol N mmol C-1 d-1,phyto_data/pd%R_nfix,fixation_rate
+water,growth,equation_options_n_limitation,Simstrat-AED2,simNFixation,1,(integer),phyto_data/pd%simNFixation,1: ; 2:
+water,growth,temperature_limitation,Simstrat-AED2,T_max,35,degC,phyto_data/pd%T_max,maximum_temperature
+water,vertical_movement,vertical_velocity,Simstrat-AED2,w_p,0,m d-1,phyto_data/pd%w_p,Sedimentation rate (negative is downwards)

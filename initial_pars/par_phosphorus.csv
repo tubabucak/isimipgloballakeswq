@@ -1,0 +1,6 @@
+"domain","process","subprocess","model_coupled","parameter","value","unit","path","note"
+"water","initial_conditions","initial_phosphate","GOTM-WET","sPO4W","0.01","g/m3","abiotic_water/initialization/sPO4W","phosphate"
+"water","initial_conditions","initial_phosphate","GOTM-Selmaprotbas","po","0.323","mmol P m-3","selmaprotbas/initialization/po","initial dissolved phosphate in the water column"
+"water","water_column_processes","phosphorus","GLM-AED","frp_initial ","0.323","mmol P m-3","aed2_phosphorus/frp_initial","-"
+"water","water_column_processes","phosphorus","Simstrat-AED2","frp_initial ","0.323","mmol P m-3","aed2_phosphorus/frp_initial","-"
+"sediment","decomposition","mineralisation_pom","GOTM-WET","kPMinS","1e-05","1/d","humus/parameters/kPMinS","humus P mineralisation at 20*C; set equal to humus kDMinS (default 5e-5 releases P 5x faster than humus DW)"

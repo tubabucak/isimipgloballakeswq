@@ -1,0 +1,25 @@
+domain,process,subprocess,model_coupled,parameter,value,unit,path,note
+water,oxygen_consumption,BOD,GOTM-WET,hO2BOD,1,mgO2/l,DOM/parameters/hO2BOD,half saturation oxygen conc. for BOD
+sediment,water_sediment_exchange,diffusion,GOTM-WET,cThetaDif,1.016,1/e^*C,sediment_exchange/parameters/cThetaDif,temperature coefficient for diffusion
+sediment,water_sediment_exchange,diffusion,GOTM-WET,cTurbDifO2,5,-,abiotic_sediment/parameters/cTurbDifO2,bioturbation factor for oxygen diffusion
+sediment,water_sediment_exchange,diffusion,GOTM-WET,kO2Dif,0.000026,m2/d,abiotic_sediment/parameters/kO2Dif,O2 diffusion constant at 20*C
+water,initial_conditions,initial_oxygen,GOTM-WET,sO2W,7.2,g/m3,abiotic_water/initialization/sO2W,oxygen
+water,water_atmosphere_exchange,reaeration_parameters,GOTM-WET,cThetaAer,1.011,1/e^*C,abiotic_water/parameters/cThetaAer,temperature coefficient for reaeration
+water,initial_conditions,initial_oxygen,GOTM-Selmaprotbas,o2,225,mmol O2 m-3,selmaprotbas/initialization/o2,-
+water,water_atmosphere_exchange,piston_velocity,GOTM-Selmaprotbas,pvel,5,m d-1,selmaprotbas/parameters/pvel,piston velocity
+water,water_atmosphere_exchange,piston_velocity,GOTM-Selmaprotbas,o2pvel_method,2,-,selmaprotbas/parameters/o2pvel_method,"method to calculate piston velocity (1=user-defined parameter; 2=Liss & Merlivat; 3=Cole & Caroco, fresh; 4=Cole & Caroco, salt; 5=iHAMOCC model), default = 2"
+water,water_atmosphere_exchange,piston_velocity,GOTM-Selmaprotbas,o2sat_method,1,-,selmaprotbas/parameters/o2sat_method,"method to calculate oxygen saturation concentration (1=Weiss; 2=Helcom polynomial; 3=seawater temperature only), default = 1"
+water,water_atmosphere_exchange,piston_velocity,GOTM-Selmaprotbas,o2corr_method,0,-,selmaprotbas/parameters/o2corr_method,"correct oxygen saturation for pressure (0=not used; 1=elevation-based; 2=pressure-based), default = 0"
+water,water_atmosphere_exchange,,GOTM-Selmaprotbas,elevation,0,m.a.s.l,selmaprotbas/parameters/elevation,"elevation of the surface in meters above sea level, only used if o2corr_method=1 (m.a.s.l), default = 0.0"
+water,initial_conditions,initial_oxygen,GLM-AED,oxy_initial,225,mmol O2 m-3,aed2_oxygen/oxy_initial,-
+water,oxygen,max_oxygen,GLM-AED,oxy_max,500,mmol O2 m-3,aed2_oxygen/oxy_max,-
+sediment,water_sediment_exchange,sediment_flux,GLM-AED,theta_sed_oxy,1.07,-,aed2_oxygen/theta_sed_oxy,Arrhenius temperature multiplier for sediment oxygen flux
+sediment,water_sediment_exchange,sediment_flux,GLM-AED,Fsed_oxy,-10,mmol m-2 d-1,aed2_oxygen/Fsed_oxy,Sediment-water flux for oxygen
+sediment,water_sediment_exchange,sediment_flux,GLM-AED,Ksed_oxy,6.8,mmol m-3,aed2_oxygen/Ksed_oxy,half-saturation concentration of oxygen sediment flux
+water,oxygen,min_oxygen,GLM-AED,oxy_min,0,mmol O2 m-3,aed2_oxygen/oxy_min,-
+water,initial_conditions,initial_oxygen,Simstrat-AED2,oxy_initial,225,mmol O2 m-3,aed2_oxygen/oxy_initial,-
+water,oxygen,max_oxygen,Simstrat-AED2,oxy_max,500,mmol O2 m-3,aed2_oxygen/oxy_max,-
+sediment,water_sediment_exchange,sediment_flux,Simstrat-AED2,theta_sed_oxy,1.07,-,aed2_oxygen/theta_sed_oxy,Arrhenius temperature multiplier for sediment oxygen flux
+sediment,water_sediment_exchange,sediment_flux,Simstrat-AED2,Fsed_oxy,-10,mmol m-2 d-1,aed2_oxygen/Fsed_oxy,Sediment-water flux for oxygen
+sediment,water_sediment_exchange,sediment_flux,Simstrat-AED2,Ksed_oxy,6.8,mmol m-3,aed2_oxygen/Ksed_oxy,half-saturation concentration of oxygen sediment flux
+water,oxygen,min_oxygen,Simstrat-AED2,oxy_min,0,mmol O2 m-3,aed2_oxygen/oxy_min,-

@@ -39,6 +39,11 @@ read_cells <- function(nc, var, x_id, y_id, max_values = 5e7) {
 #'   extracts (`..._tas_dnk_30arcmin_daily_...`).
 create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL) {
   cdata_scen <- do.call(file.path, as.list(c(base_dir, scen, gcm)))
+  # files directly in base_dir (e.g. example_climate/) are used as well
+  if (!dir.exists(cdata_scen)) {
+    message("No folder ", cdata_scen, "; using the files in ", base_dir)
+    cdata_scen <- base_dir
+  }
   files <- data.frame(file = list.files(cdata_scen, pattern = "_daily_.*[.]nc$"))
   files |>
     mutate(var = case_when(grepl("_hurs_", file) ~ "rel_h",
