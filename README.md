@@ -2,7 +2,7 @@
 
 Water-quality runs of the ISIMIP global lakes with LakeEnsemblR.WQ.
 The physical (LakeEnsemblR) set-up uses functions and lake metadata copied
-from ISIMIPglobalLER, so that package is not needed. WQ conversion, runs and
+from ISIMIPglobalLER (Johannes Feldbeuer), so that package is not needed. WQ conversion, runs and
 ISIMIP output come from LakeEnsemblR.WQ.
 
 ## Layout
