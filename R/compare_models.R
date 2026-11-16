@@ -8,15 +8,22 @@
 #'   create_isimip_global())
 #' @param vars Variables to read, e.g. c("chl", "do"); NULL = all
 #' @param models Models to read, e.g. c("glm-aed", "gotm-wet"); NULL = all
-#' @returns Long data.frame: model, var, units, lake, level ("epi"/"hypo"),
-#'   date, value (NA where the model has no data)
-read_isimip_lakes <- function(isimip_dir, lakes, vars = NULL, models = NULL) {
+#' @param scenarios sens_scenario(s) to read, e.g. c("lownutr", "highnutr");
+#'   NULL = all
+#' @returns Long data.frame: model, scenario, var, units, lake, level
+#'   ("epi"/"hypo"), date, value (NA where the model has no data)
+read_isimip_lakes <- function(isimip_dir, lakes, vars = NULL, models = NULL,
+                              scenarios = NULL) {
   files <- list.files(isimip_dir, pattern = "_global_daily_[0-9]{4}_[0-9]{4}[.]nc$",
                       full.names = TRUE)
-  info <- data.frame(path  = files,
-                     model = sub("_.*", "", basename(files)),
-                     var   = sub(".*_([^_]+)_global_daily_.*", "\\1", basename(files)))
+  # model_forcing_climate_soc_sens_var_global_daily_start_end.nc
+  parts <- strsplit(basename(files), "_")
+  info <- data.frame(path     = files,
+                     model    = vapply(parts, `[`, "", 1),
+                     scenario = vapply(parts, `[`, "", 5),
+                     var      = vapply(parts, `[`, "", 6))
   if (!is.null(vars)) info <- info[info$var %in% vars, ]
+  if (!is.null(scenarios)) info <- info[info$scenario %in% scenarios, ]
   info <- info[keep_models(info$model, models), ]
   if (nrow(info) == 0) stop("No ISIMIP files found in ", isimip_dir)
 
@@ -33,11 +40,18 @@ read_isimip_lakes <- function(isimip_dir, lakes, vars = NULL, models = NULL) {
       ncvar_get(nc, "time")
     units <- ncatt_get(nc, info$var[i], "units")$value
 
+    # one read over the lakes' bounding box: the files are chunked per time
+    # step, so reading cell by cell would decompress the file for every lake
+    x0 <- min(x_id); y0 <- min(y_id)
+    blk <- ncvar_get(nc, info$var[i], start = c(x0, y0, 1, 1),
+                     count = c(max(x_id) - x0 + 1, max(y_id) - y0 + 1, 2, -1),
+                     collapse_degen = FALSE)
+
     lapply(seq_len(nrow(lakes)), function(k) {
-      v <- matrix(ncvar_get(nc, info$var[i], start = c(x_id[k], y_id[k], 1, 1),
-                            count = c(1, 1, 2, -1)), nrow = 2)
-      data.frame(model = info$model[i], var = info$var[i], units = units,
-                 lake = lakes$id[k], level = rep(c("epi", "hypo"), each = ncol(v)),
+      v <- blk[x_id[k] - x0 + 1, y_id[k] - y0 + 1, , ]
+      data.frame(model = info$model[i], scenario = info$scenario[i], var = info$var[i],
+                 units = units, lake = lakes$id[k],
+                 level = rep(c("epi", "hypo"), each = length(date)),
                  date = rep(date, 2), value = c(v[1, ], v[2, ]))
     })
   })
@@ -92,9 +106,9 @@ keep_models <- function(model, models = NULL) {
 summarise_model_comparison <- function(df, models = NULL) {
   df[keep_models(df$model, models), ] |>
     filter(!is.na(value)) |>
-    group_by(lake, var, level, date) |>
+    group_by(scenario, lake, var, level, date) |>
     mutate(ens_mean = mean(value), n_models = n()) |>
-    group_by(lake, var, units, level, model) |>
+    group_by(scenario, lake, var, units, level, model) |>
     summarise(n_days = n(),
               mean   = mean(value),
               sd     = sd(value),
@@ -122,9 +136,9 @@ plot_model_comparison <- function(df, lake = df$lake[1], vars = NULL,
   if (nrow(d) == 0) stop("No data for lake ", lake)
   d$panel <- paste0(d$var, " (", d$units, ")")
 
-  ggplot2::ggplot(d, ggplot2::aes(x = date, y = value, colour = model)) +
+  ggplot2::ggplot(d, ggplot2::aes(x = date, y = value, colour = model, linetype = scenario)) +
     ggplot2::geom_line(linewidth = 0.3) +
     ggplot2::facet_grid(panel ~ level, scales = "free_y") +
-    ggplot2::labs(x = NULL, y = NULL, colour = "Model", title = lake) +
+    ggplot2::labs(x = NULL, y = NULL, colour = "Model", linetype = "Scenario", title = lake) +
     ggplot2::theme_bw()
 }
