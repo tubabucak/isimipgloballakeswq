@@ -17,8 +17,8 @@ invisible(lapply(list.files("R", pattern = "\\.[Rr]$", full.names = TRUE,
 
 # ---- Climate forcing ------------------------------------------------------
 # ISIMIP3a: <forcing_dir>/<climate>/<forcing>/*_daily_<start>_<end>.nc
-forcing_dir <- Sys.getenv("ISIMIP_FORCING_DIR", "path/to/ISIMIP/climate")
-hypso_nc    <- Sys.getenv("ISIMIP_HYPSO_NC", "../ISIMIP4/hypso_area.nc")  # ISIMIP hypsograph file (area, levels)
+forcing_dir <- Sys.getenv("ISIMIP_FORCING_DIR", "example_climate")
+hypso_nc    <- Sys.getenv("ISIMIP_HYPSO_NC", "data/hypso_area.nc")  # ISIMIP hypsograph file (area, levels)
 climate     <- "obsclim"
 forcing     <- "gswp3-era5"
 
@@ -30,7 +30,7 @@ block_size  <- 10                           # lakes per HPC array task (~15 h ea
 # ---- Simulation -----------------------------------------------------------
 spin_up_years <- 10                         # first 10 forcing years repeated once
 ler_models    <- c("GLM", "GOTM", "Simstrat")   # physical models to export
-wq_models     <- c("GLM-AED", "GOTM-WET", "GOTM-Selmaprotbas", "Simstrat-AED2")
+wq_models     <- c("GLM-AED", "GOTM-WET", "GOTM-Selmaprotbas", "Simstrat-AED2")  # water quality models to export
 isimip_models <- c("GLM", "WET", "SELMAPROTBAS", "SIMSTRAT")  # names for create_isimip_global()
 clean_output  <- TRUE                       # keep only metrics.rds in a lake folder once saved
 metric_template  <- "Output_global.yaml"    # metrics computed per lake (templates/)
