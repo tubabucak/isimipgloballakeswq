@@ -15,11 +15,24 @@ copy_wq_templates <- function(lake_dirs, template_dir = "templates",
   if (length(missing) > 0) stop("Template(s) not found: ", paste(missing, collapse = ", "))
   par_files <- list.files(par_dir, pattern = "^par_.*\\.csv$", full.names = TRUE)
   if (length(par_files) == 0) stop("No par_*.csv files found in ", par_dir)
+  # export_config_wq() applies every row of a par file, also rows for models
+  # that are not under `models:` in LakeEnsemblR_WQ.yaml (e.g. Simstrat-AED2
+  # when it is commented out), and then fails for lack of a config_files
+  # entry. So only rows for the models in the WQ yaml are copied.
+  wq_yaml <- file.path(template_dir, "LakeEnsemblR_WQ.yaml")
+  active <- toupper(unlist(yaml::read_yaml(wq_yaml)$models))
+  pars <- lapply(par_files, function(f) {
+    p <- read.csv(f, stringsAsFactors = FALSE, check.names = FALSE)
+    p[toupper(p$model_coupled) %in% active, , drop = FALSE]
+  })
   for (d in lake_dirs) {
     if (!dir.exists(d)) stop("Lake folder not found: ", d)
     file.copy(src, d, overwrite = overwrite)
     dir.create(file.path(d, "initial_pars"), showWarnings = FALSE)
-    file.copy(par_files, file.path(d, "initial_pars"), overwrite = overwrite)
+    for (k in seq_along(par_files)) {
+      out <- file.path(d, "initial_pars", basename(par_files[k]))
+      if (overwrite || !file.exists(out)) write.csv(pars[[k]], out, row.names = FALSE)
+    }
   }
   invisible(lake_dirs)
 }
