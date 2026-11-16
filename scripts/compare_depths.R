@@ -53,8 +53,8 @@ p <- ggplot(plot_dat, aes(mean_hl, mean_isimip)) +
   geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
 #  geom_text(data = stats, aes(label = label), x = -Inf, y = Inf,
  #           hjust = -0.05, vjust = 1.2, size = 3.2) +
-  scale_x_log10(breaks = c(0.1, 1, 10, 100, 1000), labels = scales::label_number(drop0trailing = TRUE)) +
-  scale_y_log10(breaks = c(0.1, 1, 10, 100, 1000), labels = scales::label_number(drop0trailing = TRUE)) +
+ # scale_x_log10(breaks = c(0.1, 1, 10, 100, 1000), labels = scales::label_number(drop0trailing = TRUE)) +
+#  scale_y_log10(breaks = c(0.1, 1, 10, 100, 1000), labels = scales::label_number(drop0trailing = TRUE)) +
 
   facet_wrap(~region) +
   labs(x = "HydroLAKES mean depth (m)", y = "ISIMIP mean depth (m)") +
