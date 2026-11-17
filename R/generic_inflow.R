@@ -4,8 +4,9 @@
 #' Add a generic inflow (with N, P and Si) and an equal outflow to a lake
 #'
 #' Flow is set from the lake volume and a residence time, inflow temperature
-#' follows the 7-day mean air temperature (>= 0 degC), and the nutrient
-#' concentrations are constant. Writes the LakeEnsemblR in-/outflow files and
+#' follows the 7-day mean air temperature (>= 0 degC), oxygen is at
+#' saturation for that temperature, and the nutrient concentrations are
+#' constant. Writes the LakeEnsemblR in-/outflow files and
 #' WQ_input_files/nutrient_inputs.csv, switches in-/outflows on in
 #' LakeEnsemblR.yaml and LakeEnsemblR_WQ.yaml, and re-exports the physical
 #' model configs. Run after copy_wq_templates() and before setup_wq_lake().
@@ -50,6 +51,10 @@ add_generic_inflow <- function(folder, residence_time_d = 365, discharge = NULL,
 
   nutr <- data.frame(datetime = datetime)
   for (v in names(conc)) nutr[[paste0("wq_", v, "_gramsPerCubicMeter_1")]] <- conc[[v]]
+  # Oxygen at saturation for the inflow temperature (APHA polynomial, mg/L);
+  # without it the AED models get oxygen-free inflow
+  nutr$wq_DO_gramsPerCubicMeter_1 <- round(14.652 - 0.41022 * wtemp + 0.007991 * wtemp^2 -
+                                             0.000077774 * wtemp^3, 2)
   dir.create(file.path(folder, "WQ_input_files"), showWarnings = FALSE)
   write.csv(nutr, file.path(folder, "WQ_input_files", "nutrient_inputs.csv"),
             quote = FALSE, row.names = FALSE)
