@@ -23,8 +23,8 @@
 #SBATCH --time=24:00:00
 #SBATCH --output=logs/run_lakes_%A_%a.out
 
-source "$VSC_DATA_VO/LERWQ/new_Tuba/env_tuba.sh"
+source ~/env_lerwq.sh
 echo "Node: $(hostname)  type: $VSC_ARCH_LOCAL  library: $R_LIBS_USER"
 [ -e "$R_LIBS_USER/LakeEnsemblR.WQ" ] || { echo "No shared library for $VSC_ARCH_LOCAL"; exit 1; }
-
+export ISIMIP_FORCING_DIR=$VSC_DATA_VO/data/dataset/ISIMIP/ISIMIP4a/InputData/climate/atmosphere/obsclim/global/daily/historical/GSWP3-ERA5
 Rscript scripts/02_run_lakes.R
