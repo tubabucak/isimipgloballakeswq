@@ -15,6 +15,17 @@ suppressPackageStartupMessages({
 invisible(lapply(list.files("R", pattern = "\\.[Rr]$", full.names = TRUE,
                             recursive = TRUE), source))
 
+# The inflow DO column (add_generic_inflow()) needs LakeEnsemblR.WQ with
+# wq_DO_gramsPerCubicMeter in wq_var_dic (commit cbc925c or later); say which
+# copy is loaded, as the HPC has a library per node type
+wq_pkg <- packageDescription("LakeEnsemblR.WQ")
+message("LakeEnsemblR.WQ ", wq_pkg$Version, " (", substr(c(wq_pkg$RemoteSha, "local")[1], 1, 7),
+        ") from ", dirname(system.file(package = "LakeEnsemblR.WQ")))
+if (!"wq_DO_gramsPerCubicMeter" %in% LakeEnsemblR.WQ::wq_var_dic$standard_name) {
+  stop("This LakeEnsemblR.WQ has no inflow oxygen (wq_DO_gramsPerCubicMeter); reinstall it ",
+       "into the library above. .libPaths(): ", paste(.libPaths(), collapse = ", "))
+}
+
 # ---- Climate forcing ------------------------------------------------------
 # ISIMIP3a: <forcing_dir>/<climate>/<forcing>/*_daily_<start>_<end>.nc
 forcing_dir <- Sys.getenv("ISIMIP_FORCING_DIR", "example_climate")
