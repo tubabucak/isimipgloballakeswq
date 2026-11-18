@@ -168,3 +168,8 @@ pdf(file.path(out_dir, "plots.pdf"), width = 11, height = 7.5)
 invisible(lapply(plots, print))
 dev.off()
 message("Plots in ", out_dir)
+
+# Time series test for a single lake
+lake <- lake_meta_dat[lake_meta_dat$id == "lake_26164", c("id", "lat", "lon")]
+df <- read_isimip_lakes("isimip_global/obsclim/gswp3-era5", lakes = lake)
+plot_model_comparison(df, lake = "lake_26164")
