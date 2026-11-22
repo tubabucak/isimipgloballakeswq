@@ -1,8 +1,10 @@
 # Step 1 (once): residence time and scenario set of every lake
 #
 # Lakes with HydroLAKES discharge get a generic inflow in the nutrient
-# scenarios (residence time clamped to 7 d - 100 yr); lakes without discharge
-# or without data get no inflow and are run once as "default".
+# scenarios (residence time clamped to 7 d - 100 yr). Lakes without discharge
+# (Res_time -1) or without data (-9999) get a discharge estimated from the
+# watershed area (see make_inflow_table() and the README); with
+# estimate_missing = FALSE they get no inflow and are run once as "default".
 
 source("scripts/00_settings.R")
 

@@ -38,7 +38,8 @@ comment <- if (set == "default") {
   conc <- nutr_scenarios[[set]]
   paste0("Generic inflow with constant concentrations (g m-3): ",
          paste(names(conc), conc, sep = " ", collapse = ", "),
-         "; flow from HydroLAKES residence time (clamped to 7 d - 100 yr)")
+         "; flow from the HydroLAKES residence time, or for lakes without HydroLAKES ",
+         "discharge from a discharge estimated from the watershed area (clamped to 7 d - 100 yr)")
 }
 
 create_isimip_global(lakes,

@@ -53,8 +53,10 @@ wet_max_lat   <- 66.5                       # |latitude| cap in GOTM-WET's gotm.
                                             # with polar day/night, beyond 66.56); NULL = no cap
 
 # Inflow concentrations (g m-3 as element) of the nutrient scenarios; same
-# initial conditions (initial_pars/) in all. Lakes without discharge are run
-# once without inflow as "default".
+# initial conditions (initial_pars/) in all. Lakes without HydroLAKES
+# discharge get an estimated one (data/inflow_table.csv); only with
+# make_inflow_table(estimate_missing = FALSE) are they run once without inflow
+# as "default".
 nutr_scenarios <- list(lownutr  = trophic_presets$oligotrophic$inflow,
                        highnutr = trophic_presets$eutrophic$inflow)
 
