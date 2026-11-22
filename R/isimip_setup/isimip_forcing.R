@@ -34,10 +34,14 @@ read_cells <- function(nc, var, x_id, y_id, max_values = 5e7) {
 #'
 #' @param base_dir Directory with subfolders <scen>/<gcm> holding the ISIMIP
 #'   files, or (with `scen` and `gcm` NULL) the folder with the files itself
+#' @param first_year Keep only the files (periods, usually decades) that
+#'   start in or after this year, e.g. 1981 for 1981_1990 onwards; NULL = all.
+#'   The simulation (and its spin-up, the first forcing years) starts with
+#'   the first file kept.
 #' @returns data.frame with columns file, var, per, path
 #' @details Works for global files (`..._tas_global_daily_...`) and regional
 #'   extracts (`..._tas_dnk_30arcmin_daily_...`).
-create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL) {
+create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL, first_year = NULL) {
   cdata_scen <- do.call(file.path, as.list(c(base_dir, scen, gcm)))
   # files directly in base_dir (e.g. example_climate/) are used as well
   if (!dir.exists(cdata_scen)) {
@@ -45,7 +49,7 @@ create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL) {
     cdata_scen <- base_dir
   }
   files <- data.frame(file = list.files(cdata_scen, pattern = "_daily_.*[.]nc$"))
-  files |>
+  files <- files |>
     mutate(var = case_when(grepl("_hurs_", file) ~ "rel_h",
                            grepl("_tas_", file) ~ "at",
                            grepl("_sfcwind_", file) ~ "wind",
@@ -57,6 +61,12 @@ create_cdata_paths <- function(base_dir, scen = NULL, gcm = NULL) {
            per = gsub("\\.nc", "", gsub(".*_daily_", "", file))) |>
     filter(!is.na(var)) |>
     mutate(path = gsub("/+", "/", file.path(cdata_scen, file)))
+  if (!is.null(first_year)) {
+    start <- as.integer(sub("_.*", "", files$per))
+    files <- files[start >= first_year, ]
+    if (nrow(files) == 0) stop("No forcing files in ", cdata_scen, " start in or after ", first_year)
+  }
+  files
 }
 
 #' Extract a variable at the lakes' grid cells from an ISIMIP netcdf file
