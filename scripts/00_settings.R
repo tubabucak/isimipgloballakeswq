@@ -32,6 +32,8 @@ forcing_dir <- Sys.getenv("ISIMIP_FORCING_DIR", "example_climate")
 hypso_nc    <- Sys.getenv("ISIMIP_HYPSO_NC", "data/hypso_area.nc")  # ISIMIP hypsograph file (area, levels)
 climate     <- "obsclim"
 forcing     <- "gswp3-era5"
+first_year  <- 1981     # use the forcing files (decades) from this year on; NULL = all.
+                        # The spin-up repeats the first spin_up_years of these.
 
 # ---- Lakes ----------------------------------------------------------------
 load("data/lake_meta_dat.rda")              # from ISIMIPglobalLER
