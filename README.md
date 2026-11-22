@@ -59,20 +59,54 @@ To leave a WQ model out, comment it out under `models:` in
 ## Global runs
 
 Current climate (`gswp3-era5`, `obsclim`, `histsoc`), all 41449 lakes, with
-the same initial conditions (`initial_pars/`) everywhere and the first 10
-forcing years repeated once as spin-up. Three sets, written as
-`sens_scenario` in the ISIMIP file names
+the same initial conditions (`initial_pars/`) everywhere. The run uses the
+forcing files from `first_year` (1981, set in `00_settings.R`) to the end of
+the forcing; the first 10 of these years are repeated once as spin-up. Two
+sets, written as `sens_scenario` in the ISIMIP file names
 (`glm-aed_gswp3-era5_obsclim_histsoc_<set>_chl_global_daily_1981_1990.nc`):
 
 | Set | Lakes | Inflow |
 |---|---|---|
-| `lownutr` | with HydroLAKES discharge (40032) | generic, low concentrations |
+| `lownutr` | all 41449 | generic, low concentrations |
 | `highnutr` | same lakes | generic, high concentrations |
-| `default` | `Res_time` -1 (no discharge, 1310) or missing (107) | none |
 
-The inflow equals the outflow and is set from the HydroLAKES residence time
-and the hypsograph volume; residence times are clamped to 7 d - 100 yr
-(flags `short`/`long` in `data/inflow_table.csv`).
+### Inflow
+
+Every lake gets a constant inflow Q equal to the outflow (no water balance),
+from the residence time τ and the hypsograph volume V: Q = V / τ. The
+nutrient load is Q × C, with constant concentrations C per set
+(`trophic_presets` in `R/trophic_setup.R`, chosen in `nutr_scenarios` in
+`00_settings.R`). The inflow temperature is the 7-day mean air temperature
+(at least 0 °C), and the inflow oxygen is at saturation for that temperature.
+
+τ per lake is in `data/inflow_table.csv` (step 1, `make_inflow_table()`):
+
+| `source` | Lakes | Residence time |
+|---|---|---|
+| `hydrolakes` | 40032 with HydroLAKES discharge | HydroLAKES `Res_time` |
+| `est_wshd` | 1310 with `Res_time` -1 (`Dis_avg` 0: mostly terminal lakes in arid basins) | estimated from the watershed area |
+| `est_wshd_assumed` | 107 without HydroLAKES data (-9999: small islands, far Arctic) | estimated from an assumed watershed area |
+
+The discharge of the lakes without it is estimated as follows:
+
+1. Fit log10(`Dis_avg`) = -2.08 + 0.925 × log10(`Wshd_area`) on the lakes
+   with discharge (R² 0.78; lake area or volume explain much less, R² 0.34).
+2. Lakes without a watershed area get `Lake_area` × the median
+   `Wshd_area` / `Lake_area` of the lakes with discharge in the same
+   |latitude| band (0-30°: 42, 30-50°: 51, 50-66.5°: 16, > 66.5°: 6.8),
+   capped at the global median (24), because on small islands the island
+   limits the catchment.
+3. Regional correction: the fitted discharge is multiplied by the median
+   ratio of HydroLAKES to fitted discharge of the lakes with discharge within
+   5° (at least 10 lakes, otherwise no correction). Arid regions thus get
+   less water than the global fit gives.
+4. τ = `Vol_total` / estimated discharge.
+
+All residence times are clamped to 7 d - 100 yr (`flag` `short`/`long` in
+the table; `res_time_hl` is the HydroLAKES value, `res_time_est` the
+estimate, `res_time` the value used). With
+`make_inflow_table(estimate_missing = FALSE)` the lakes without discharge get
+no inflow and are run once as a third set, `default`.
 
 Each lake run keeps only `metrics.rds`: the metrics in
 `templates/Output_global.yaml` (temperature, DO, TN, TP, total Chl-a,
@@ -87,10 +121,13 @@ GOTM-WET fails with polar day/night, so lakes beyond the polar circle
 
 
 On the HPC (VSC): the job scripts in `hpc/` run on `zen4` with
-`--export=NONE` and source `env_tuba.sh`, which loads R and sets the R
-library (Dan's setup"); the jobs stop if LakeEnsemblR.WQ is not found in that library.
-`env_tuba.sh` must also set `ISIMIP_FORCING_DIR` and `ISIMIP_HYPSO_NC`;
-without them the runs use the local example data. Run step 1
+`--export=NONE` and source `~/env_lerwq.sh`, which loads R and netCDF
+(for `nccopy`) and sets the R library; the jobs stop if LakeEnsemblR.WQ is
+not found in that library. `ISIMIP_FORCING_DIR` is exported in the job
+scripts and `ISIMIP_HYPSO_NC` must be set as well; without them the runs use
+the local example data. Step 3 has one array task per set and model
+(0-3 `lownutr`, 4-7 `highnutr`, 8-11 `default`); with all lakes in
+`lownutr`/`highnutr`, submit it with `--array=0-7`. Run step 1
 (`Rscript scripts/01_inflow_table.R`), then `bash hpc/submit_all.sh` from
 the project root on the login node: it submits step 2 in chunks of 1000
 array tasks (10 lakes per task, at most `MAX_RUNNING` = 200 at once) and
@@ -105,7 +142,8 @@ a multi-core computer, one lake per process:
 ## Notes
 
 - `templates/LakeEnsemblR.yaml` started from the LakeEnsemblR.WQ example.
-  In- and outflows are off. Name, location, depth, dates, `Kw`, GOTM `nlev`
+  In- and outflows are off there and switched on per lake by
+  `add_generic_inflow()`. Name, location, depth, dates, `Kw`, GOTM `nlev`
   and Simstrat `Grid` are set per lake. GLM `bsn_len`/`bsn_wid` are not in
   the template, so LakeEnsemblR computes them from the hypsograph surface
   area A0 (`bsn_wid = sqrt(2*A0/pi)`, `bsn_len = 2*bsn_wid`).
