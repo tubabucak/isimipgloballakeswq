@@ -50,7 +50,7 @@ if (!is.null(old_log)) old_log <- old_log[!old_log$row %in% todo, ]
 if (length(todo) > 0) {
   # ---- Physical set-up, once per lake -------------------------------------
   setup_dir <- file.path(run_dir, "setup")
-  met_paths <- create_cdata_paths(forcing_dir, climate, forcing)
+  met_paths <- create_cdata_paths(forcing_dir, climate, forcing, first_year = first_year)
   setup_ler_lakes(lake_id       = todo,
                   lake_meta     = lake_meta_dat,
                   config_file   = file.path(template_dir, "LakeEnsemblR.yaml"),
