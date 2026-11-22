@@ -28,7 +28,7 @@ lakes <- data.frame(id  = lake_meta_dat$id[logs$row],
                     rds = file.path(logs$folder, "metrics.rds"))
 
 # Output years: the forcing period, without the spin-up
-met_paths <- create_cdata_paths(forcing_dir, climate, forcing)
+met_paths <- create_cdata_paths(forcing_dir, climate, forcing, first_year = first_year)
 years <- range(as.numeric(unlist(strsplit(unique(met_paths$per), "_"))))
 
 comment <- if (set == "default") {
