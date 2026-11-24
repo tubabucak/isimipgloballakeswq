@@ -29,5 +29,5 @@ for (( offset = 0; offset < n_tasks; offset += CHUNK )); do
 done
 
 dep=$(IFS=:; echo "${jobs[*]}")
-id=$(sbatch --parsable --dependency=afterany:${dep} hpc/isimip_output.sh)
+id=$(sbatch --parsable --array=0-7 --dependency=afterany:${dep} hpc/isimip_output.sh)
 echo "step 3: job $id (starts after ${dep//:/, })"
