@@ -1,19 +1,24 @@
 # Plots of the ISIMIP files of a test run (e.g. the 40 Danish lakes)
 #
-#   Rscript scripts/plot_isimip_test.R [isimip_dir] [out_dir]
+#   Rscript scripts/plot_isimip_test.R [isimip_dir] [out_dir] [ts_lakes]
 #
 # isimip_dir: folder with the *_global_daily_*.nc files
 #   (default isimip_global/obsclim/gswp3-era5)
 # out_dir: where the plots go (default <isimip_dir>/plots)
+# ts_lakes: lakes for the time series plots (6): "all", "deepest", or
+#   comma-separated lake ids or rows, e.g. lake_19304,lake_1662 or 19304,1662
+#   (default "all")
+#
+# e.g.  Rscript scripts/plot_isimip_test.R isimip_global/obsclim/gswp3-era5 plots 19304,1662
 #
 # The lakes are the grid cells with data, matched to lake_meta_dat. Plots
 # (PNG, and all in plots.pdf):
-#   1 scenario_contrast  10-year epilimnion mean per lake, model and scenario
+#   1 scenario_contrast  epilimnion mean (whole period) per lake, model and scenario
 #   2 seasonal_cycle     monthly mean over the lakes, epilimnion and hypolimnion
 #   3 tp_vs_chl          lake means of TP against Chl-a (nutrient response)
 #   4 tp_vs_restime      lake mean TP against the residence time used
-#   5 map_<var>          10-year epilimnion mean per lake on a map
-#   6 lake_<id>          daily time series of one lake (the deepest)
+#   5 map_<var>          epilimnion mean (whole period) per lake on a map
+#   6 lake_<id>          daily time series of the lakes chosen with ts_lakes
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -26,6 +31,7 @@ load("data/lake_meta_dat.rda")
 args <- commandArgs(trailingOnly = TRUE)
 isimip_dir <- if (length(args) >= 1) args[1] else "isimip_global/obsclim/gswp3-era5"
 out_dir    <- if (length(args) >= 2) args[2] else file.path(isimip_dir, "plots")
+ts_choice  <- if (length(args) >= 3) args[3] else "all"
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ---- Lakes: cells with data in the first file -----------------------------
@@ -65,6 +71,8 @@ df <- read_isimip_lakes(isimip_dir, lakes) |>
 message("Models: ", paste(unique(df$model), collapse = ", "),
         "; scenarios: ", paste(levels(df$scenario), collapse = ", "))
 
+period <- paste(format(range(df$date), "%Y"), collapse = "-")
+
 lake_means <- df |>
   group_by(model, scenario, var, panel, lake, level) |>
   summarise(value = mean(value), .groups = "drop")
@@ -78,7 +86,7 @@ plots$scenario_contrast <- lake_means |>
   geom_boxplot(outlier.size = 0.6) +
   facet_wrap(~panel, scales = "free_y") +
   labs(x = NULL, y = NULL, fill = "Scenario",
-       title = "10-year epilimnion mean per lake",
+       title = paste("Epilimnion mean per lake,", period),
        subtitle = paste(nrow(lakes), "lakes")) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -107,7 +115,7 @@ if (all(c("tp", "chl") %in% names(wide))) {
     facet_wrap(~model) +
     scale_x_log10() + scale_y_log10() +
     labs(x = var_labels[["tp"]], y = var_labels[["chl"]], colour = "Scenario",
-         title = "Epilimnion TP against Chl-a (10-year lake means)") +
+         title = paste("Epilimnion TP against Chl-a, lake means", period)) +
     theme_bw()
 }
 
@@ -123,7 +131,7 @@ if (file.exists("data/inflow_table.csv") && "tp" %in% names(wide)) {
       facet_wrap(~scenario) +
       scale_x_log10() + scale_y_log10() +
       labs(x = "Residence time (days)", y = var_labels[["tp"]], colour = "Model",
-           title = "Epilimnion TP against residence time (10-year lake means)") +
+           title = paste("Epilimnion TP against residence time, lake means", period)) +
       theme_bw()
   }
 }
@@ -145,20 +153,37 @@ for (v in intersect(names(var_labels), unique(map_df$var))) {
     facet_grid(scenario ~ model) +
     coord_quickmap(xlim = range(d$lon) + c(-1, 1), ylim = range(d$lat) + c(-1, 1)) +
     scale_fill_viridis_c() +
-    labs(x = NULL, y = NULL, fill = NULL, title = paste(var_labels[[v]], "- 10-year epilimnion mean")) +
+    labs(x = NULL, y = NULL, fill = NULL, title = paste(var_labels[[v]], "- epilimnion mean", period)) +
     theme_bw()
 }
 
-# 6 Time series of the deepest lake
-deep <- lakes$id[which.max(lakes$depth)]
-plots[[deep]] <- df |>
-  filter(lake == deep) |>
-  ggplot(aes(date, value, colour = model, linetype = scenario)) +
-  geom_line(linewidth = 0.3) +
-  facet_grid(panel ~ level, scales = "free_y") +
-  labs(x = NULL, y = NULL, colour = "Model", linetype = "Scenario",
-       title = paste0(deep, " (", round(max(lakes$depth), 1), " m)")) +
-  theme_bw()
+# 6 Time series of the chosen lakes (ts_choice: all, deepest, or ids/rows)
+ts_lakes <- if (ts_choice == "all") {
+  lakes
+} else if (ts_choice == "deepest") {
+  lakes[which.max(lakes$depth), ]
+} else {
+  want <- trimws(strsplit(ts_choice, ",")[[1]])
+  want <- ifelse(grepl("^[0-9]+$", want), paste0("lake_", want), want)   # rows -> ids
+  not_found <- setdiff(want, lakes$id)
+  if (length(not_found) > 0) {
+    warning("Not in the ISIMIP files: ", paste(not_found, collapse = ", "), call. = FALSE)
+  }
+  lakes[lakes$id %in% want, ]
+}
+message("Time series for ", nrow(ts_lakes), " lake(s)")
+for (i in seq_len(nrow(ts_lakes))) {
+  id <- ts_lakes$id[i]
+  plots[[id]] <- df |>
+    filter(lake == id) |>
+    ggplot(aes(date, value, colour = model, linetype = scenario)) +
+    geom_line(linewidth = 0.3) +
+    facet_grid(panel ~ level, scales = "free_y") +
+    labs(x = NULL, y = NULL, colour = "Model", linetype = "Scenario",
+         title = paste0(id, " (", round(ts_lakes$depth[i], 1), " m, ",
+                        round(ts_lakes$lat[i], 2), " N ", round(ts_lakes$lon[i], 2), " E)")) +
+    theme_bw()
+}
 
 # ---- Save -----------------------------------------------------------------
 for (n in names(plots)) {
@@ -168,8 +193,3 @@ pdf(file.path(out_dir, "plots.pdf"), width = 11, height = 7.5)
 invisible(lapply(plots, print))
 dev.off()
 message("Plots in ", out_dir)
-
-# Time series test for a single lake
-lake <- lake_meta_dat[lake_meta_dat$id == "lake_26164", c("id", "lat", "lon")]
-df <- read_isimip_lakes("isimip_global/obsclim/gswp3-era5", lakes = lake)
-plot_model_comparison(df, lake = "lake_26164")
