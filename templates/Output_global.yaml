@@ -9,7 +9,7 @@ model_folders:
   WET: "GOTM-WET/output"
   SELMAPROTBAS: "GOTM-Selmaprotbas/output"
   SIMSTRAT: "Simstrat-AED2/output"
-# Metrics for the global runs only (copied into the lake folders as
+# Metrics will be calculated for the global runs only (copied into the lake folders as
 # Output.yaml by run_global_lake()). Temp_degreeCelcius is also needed for
 # the epilimnion/hypolimnion split in create_isimip_global().
 Level1:
